@@ -17,6 +17,7 @@ public class AlertBox {
         button.setOnAction(e -> window.close()); //closes the window when the button is pressed
 
         VBox layout = new VBox(10);
+        layout.setPadding(new Insets(15, 12, 15, 12));
         layout.getChildren().addAll(label, button);
         layout.setAlignment(Pos.CENTER);
 
