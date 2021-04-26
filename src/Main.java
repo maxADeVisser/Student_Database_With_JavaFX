@@ -1,21 +1,18 @@
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 public class Main extends Application { //Application is the class holding all the javaFX stuff. So we always need to inherit it to use javaFX. futhermore everytime we want to handle a user input, we implement the EventHandler
-
-    // --- Below Variables needs to be global because multiple functions are handling them:
+    //Global Variables:
     Stage window; //main window
-    Scene primaryScene, secondaryScene; //different scenes
-    Button button, button2, exitButton; //buttons need to be global since we need to handle them in different functions
+    Scene studentScene, courseScene, mainScene;
+
+    int windowWidth = 800;
+    int windowHeight = 500;
 
     public static void main(String[] args) {
         launch(args); //a method inside the Application class that launches javaFX application
@@ -23,37 +20,126 @@ public class Main extends Application { //Application is the class holding all t
 
     @Override
     public void start(Stage primaryStage) throws Exception { //all the code inside here is the main javaFX code
-        window = primaryStage; //skal fjernes igen
+        window = primaryStage; //renaming for easier understanding of code
         window.setTitle("Student Database System"); //sets the title of the window
 
-        // ----- Initializing Objects -------
-        button = new Button("Go to scene 2"); //creates a button
-        button2 = new Button("Go back to scene 1 again");
-        exitButton = new Button("Exit"); // a button for closing the program. Its better too use this, since there probably is some code we want to run just before closing the program
+        // -- LIST VIEW STUDENTS
+        ListView<String> studentListView = new ListView<>(); // specify what type the list is holding. This one holds strings
+        studentListView.getItems().addAll("Aisha", "Albert", "Sine", "Per"); // skal addes fra databasen
+        studentListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE); // can also be set to select multiple
+        studentListView.setMinWidth(windowWidth/3);
 
-        Label label1 = new Label("Welcome to the Main Window"); // creates a label (A static text)
-        Label label2 = new Label("secondary scene");
+        // -- TEXTAREA STUDENTS
+        TextArea information = new TextArea();
+        information.setEditable(false);
+        //information.setText("test"); // her skal information parses til
+        information.setMaxWidth(windowWidth/2);
+        information.setPromptText("Information will be shown here");
 
-        VBox layout = new VBox(20); // used for mainScene
-        layout.getChildren().addAll(label1, button, exitButton);
+        //STUDENT TOP MENU
+        HBox studentTopMenu = new HBox(20); // top menu in studentspanel
+        studentTopMenu.setPadding(new Insets(15, 12, 15, 12));
+        studentTopMenu.setSpacing(10); //spacing between buttons
+        studentTopMenu.setStyle("-fx-background-color: #336699;"); //changes the colour to blue for the top menu
+        Label lbSearchStudent = new Label("Insert a student:"); //ved ikke om skal slettes
+        TextField searchStudent = new TextField();
+        searchStudent.setPromptText("Search for a student");
+        Button btnSearchButton = new Button("Search");
+        btnSearchButton.setPrefSize(100, 20); //set the size of the button
+        Button btnBackToMenu = new Button("Back to menu");
+        btnBackToMenu.setPrefSize(100, 20); //set the size of the button
+        studentTopMenu.getChildren().addAll(lbSearchStudent, searchStudent, btnSearchButton, btnBackToMenu);
+
+        // --- STUDENT BORDERPANE --- Layout for the student scene
+        BorderPane studentLayout = new BorderPane();
+        studentLayout.setTop(studentTopMenu);
+        studentLayout.setLeft(studentListView);
+        studentLayout.setCenter(information);
 
 
-        VBox layout1 = new VBox(20); // used for secondary
-        layout1.getChildren().addAll(label2, button2);
 
-        primaryScene = new Scene(layout, 500,300); // creates the main scene
-        secondaryScene = new Scene(layout1, 500,300); // creates the second scene
+
+
+
+
+
+        // TOP MENU COURSE
+        HBox courseTopMenu = new HBox(20); // top menu in studentspanel
+        courseTopMenu.setPadding(new Insets(15, 12, 15, 12));
+        courseTopMenu.setSpacing(10); //spacing between buttons
+        courseTopMenu.setStyle("-fx-background-color: #336699;"); //changes the colour to blue for the top menu
+        Label lbSearchCourse = new Label("Insert a student:"); //ved ikke om skal slettes
+        TextField searchCourse = new TextField();
+        searchCourse.setPromptText("Search for a student");
+        Button btnSearchButtonC = new Button("Search");
+        btnSearchButtonC.setPrefSize(100, 20); //set the size of the button
+        Button btnBackToMenuFromCourse = new Button("Back to menu");
+        btnBackToMenuFromCourse.setPrefSize(100, 20); //set the size of the button
+        courseTopMenu.getChildren().addAll(lbSearchCourse, searchCourse, btnSearchButtonC, btnBackToMenuFromCourse);
+
+        // -- LIST VIEW COURSE
+        ListView<String> courseListView = new ListView<>(); // specify what type the list is holding. This one holds strings
+        courseListView.getItems().addAll("Software Development", "Essential Computing 1"); // skal addes fra databasen
+        courseListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE); // can also be set to select multiple
+        courseListView.setMinWidth(windowWidth/3);
+
+        // -- TEXTAREA COURSE
+        TextArea informationCourse = new TextArea();
+        informationCourse.setEditable(false);
+        informationCourse.setText("Her er der information om kurserne"); // her skal information parses til
+        informationCourse.setMaxWidth(windowWidth/2);
+        informationCourse.setPromptText("Information will be shown here");
+
+        // --- COURSE BORDERPANE --- Layout for the course scene
+        BorderPane courseLayout = new BorderPane();
+        courseLayout.setTop(courseTopMenu);
+        courseLayout.setLeft(courseListView);
+        courseLayout.setCenter(informationCourse);
+
+
+
+
+
+
+
+        // - temporary main scene
+        VBox mainLayout = new VBox(20); // used for mainScene
+        Label mainWindowLabel = new Label("Main Window");
+        mainLayout.setAlignment(Pos.CENTER);
+        Button btnStudent = new Button("Administrate Students");
+        Button btnCourse = new Button("Administrate Courses");
+        Button exitButton = new Button("Exit");
+        mainLayout.getChildren().addAll(mainWindowLabel, btnStudent,btnCourse, exitButton);
+
+
+        // DEN HER SKAL SLETTES OG ER KUN TEMPORARY. Blvier brugt til Courses scene
+        HBox slet = new HBox(20); // top menu in studentspanel
+        slet.setPadding(new Insets(15, 12, 15, 12));
+        slet.setSpacing(10);
+        slet.setStyle("-fx-background-color: #336699;"); //changes the colour to blue for the top menu
+
+
+        studentScene = new Scene(studentLayout, windowWidth,windowHeight); // creates the main scene
+        courseScene = new Scene (courseLayout, windowWidth, windowHeight);
+        mainScene = new Scene(mainLayout,windowWidth,windowHeight);
 
 
         // ------------ FUNCTIONALITY ------------
-        button.setOnAction(event -> { //uses a lambda expression to call the handle function inside the application class. The button press executes when is after ->. further more we can use lambda expressions to make multiple lines of code happen when pressing a button
-            //AlertBox.display("ALERT!", "You are trying to enter a new scene, but you are too cool");
-            window.setScene(secondaryScene);
-            System.out.println("Changed to secondaryScene");
+        btnSearchButtonC.setOnAction(event -> {
+            System.out.println(searchCourse.getText()); // prints what is searched for
+            System.out.println(courseListView.getSelectionModel().getSelectedItem()); // prints what is selected from the list
         });
-        button2.setOnAction(event -> {
-            window.setScene(primaryScene);
-            System.out.println("Changed to primaryScene");
+        btnSearchButton.setOnAction(event -> {
+            System.out.println(searchCourse.getText()); // prints what is searched for
+            System.out.println(studentListView.getSelectionModel().getSelectedItem()); // prints what is selected from the list
+        });
+        btnBackToMenuFromCourse.setOnAction(event -> { //uses a lambda expression to call the handle function inside the application class. The button press executes when is after ->. further more we can use lambda expressions to make multiple lines of code happen when pressing a button
+            window.setScene(mainScene);
+            System.out.println("Changed to Main Menu");
+        });
+        btnBackToMenu.setOnAction(event -> { //uses a lambda expression to call the handle function inside the application class. The button press executes when is after ->. further more we can use lambda expressions to make multiple lines of code happen when pressing a button
+            window.setScene(mainScene);
+            System.out.println("Changed to Main Menu");
         });
 
         exitButton.setOnAction(event -> closeProgram());
@@ -62,10 +148,13 @@ public class Main extends Application { //Application is the class holding all t
             closeProgram(); // does such that, when the user hits the x in the upper corner, we still execute the closeProgram method
         });
 
-        window.setScene(primaryScene); // initially sets the scene to the primaryScene
+        btnStudent.setOnAction(event -> window.setScene(studentScene));
+        btnCourse.setOnAction(event -> window.setScene(courseScene));
+
+        window.setScene(mainScene); // initially sets the scene to the primaryScene
         window.show(); // opens the application window
 
-    } // ### JavaFX code stops here ###
+    } // ### JavaFX Main code stops here ###
 
     public void closeProgram(){ //method for closing the program
         System.out.println("Closing program");
@@ -79,14 +168,3 @@ public class Main extends Application { //Application is the class holding all t
         }
     }
 }
-
-/* ------ NOTES -------
-    - A entire window is called a Stage
-    - The content inside the window is called the Scene
-    - The Stackpane is just one type of layout
-    - A Label is static text that the user cant interact with
-
-    -
-
-
- */
