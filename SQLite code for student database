@@ -69,9 +69,9 @@ CREATE TABLE IF NOT EXISTS Courses(
     FOREIGN KEY (Teacher_ID) REFERENCES Teachers (Teacher_ID)
 );
 INSERT INTO Courses (Course_ID, Course_name, Teacher_ID, Year, Semester)
-VALUES ('COURSE-SD-AUTUM-2019-1', 'Software Development', 'TEACHER-LN', 2019, 'Autum'),
+VALUES ('COURSE-SD-AUTUMN-2019-1', 'Software Development', 'TEACHER-LN', 2019, 'Autum'),
        ('COURSE-SD-SPRING-2020-1', 'Software Development', 'TEACHER-LN', 2020, 'Spring'),
-       ('COURSE-ES1-AUTUM-2019-1', 'Essential Computing 1', 'TEACHER-EB', 2019, 'Autum');
+       ('COURSE-ES1-AUTUMN-2019-1', 'Essential Computing 1', 'TEACHER-EB', 2019, 'Autum');
 
 
 
@@ -102,35 +102,35 @@ CREATE TABLE IF NOT EXISTS Student_enrollments(
     FOREIGN KEY (Grade_ID) REFERENCES Grades (Grade_ID)
 );
 INSERT INTO Student_enrollments (Student_ID, Course_ID, Grade_ID) --OBS: SQL autogenerer enrollment_ID
-VALUES ('STUDENT-AIL', 'COURSE-SD-AUTUM-2019-1', '12'),
-       ('STUDENT-AIL', 'COURSE-ES1-AUTUM-2019-1', '10'),
+VALUES ('STUDENT-AIL', 'COURSE-SD-AUTUMN-2019-1', '12'),
+       ('STUDENT-AIL', 'COURSE-ES1-AUTUMN-2019-1', '10'),
 
        ('STUDENT-AYN', 'COURSE-SD-SPRING-2020-1', 'no grade'),
-       ('STUDENT-AYN', 'COURSE-ES1-AUTUM-2019-1', '12'),
+       ('STUDENT-AYN', 'COURSE-ES1-AUTUMN-2019-1', '12'),
 
-       ('STUDENT-AFJ', 'COURSE-SD-AUTUM-2019-1', '7'),
-       ('STUDENT-AFJ', 'COURSE-ES1-AUTUM-2019-1', '10'),
+       ('STUDENT-AFJ', 'COURSE-SD-AUTUMN-2019-1', '7'),
+       ('STUDENT-AFJ', 'COURSE-ES1-AUTUMN-2019-1', '10'),
 
        ('STUDENT-BRB', 'COURSE-SD-SPRING-2020-1', 'no grade'),
-       ('STUDENT-BRB', 'COURSE-ES1-AUTUM-2019-1', '02'),
+       ('STUDENT-BRB', 'COURSE-ES1-AUTUMN-2019-1', '02'),
 
-       ('STUDENT-ABA', 'COURSE-SD-AUTUM-2019-1', '10'),
-       ('STUDENT-ABA', 'COURSE-ES1-AUTUM-2019-1', '7'),
+       ('STUDENT-ABA', 'COURSE-SD-AUTUMN-2019-1', '10'),
+       ('STUDENT-ABA', 'COURSE-ES1-AUTUMN-2019-1', '7'),
 
        ('STUDENT-EEK', 'COURSE-SD-SPRING-2020', 'no grade'),
-       ('STUDENT-EEK', 'COURSE-ES1-AUTUM-2019-1', '10'),
+       ('STUDENT-EEK', 'COURSE-ES1-AUTUMN-2019-1', '10'),
 
-       ('STUDENT-OFO', 'COURSE-SD-AUTUM-2019-1', '4'),
-       ('STUDENT-OFO', 'COURSE-ES1-AUTUM-2019-1', '12'),
+       ('STUDENT-OFO', 'COURSE-SD-AUTUMN-2019-1', '4'),
+       ('STUDENT-OFO', 'COURSE-ES1-AUTUMN-2019-1', '12'),
 
        ('STUDENT-SLS', 'COURSE-SD-SPRING-2020-1', 'no grade'),
-       ('STUDENT-SLS', 'COURSE-ES1-AUTUM-2019-1', '12'),
+       ('STUDENT-SLS', 'COURSE-ES1-AUTUMN-2019-1', '12'),
 
-       ('STUDENT-TTH', 'COURSE-SD-AUTUM-2019-1', '12'),
-       ('STUDENT-TTH', 'COURSE-ES1-AUTUM-2019-1', '12'),
+       ('STUDENT-TTH', 'COURSE-SD-AUTUMN-2019-1', '12'),
+       ('STUDENT-TTH', 'COURSE-ES1-AUTUMN-2019-1', '12'),
 
        ('STUDENT-JAJ', 'COURSE-SD-SPRING-2020-1', 'no grade'),
-       ('STUDENT-JAJ', 'COURSE-ES1-AUTUM-2019-1', '7');
+       ('STUDENT-JAJ', 'COURSE-ES1-AUTUMN-2019-1', '7');
 
 
 
