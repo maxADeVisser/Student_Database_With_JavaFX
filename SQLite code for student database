@@ -95,40 +95,76 @@ CREATE TABLE IF NOT EXISTS Student_enrollments(
     Enrollment_ID INTEGER PRIMARY KEY, -- bliver autogeneret af SQL
     Student_ID TEXT not null,
     Course_ID TEXT not null,
-    Enrollment_date INTEGER, --se om du kan lave den her til en faktisk dato. Tror SQL kan gøre det
     Grade_ID TEXT not null,
 
     FOREIGN KEY (Student_ID) REFERENCES Students (Student_ID),
     FOREIGN KEY (Course_ID) REFERENCES Courses (Course_ID),
     FOREIGN KEY (Grade_ID) REFERENCES Grades (Grade_ID)
 );
-INSERT INTO Student_enrollments (Student_ID, Course_ID, Enrollment_date, Grade_ID) --OBS: SQL autogenerer enrollment_ID
-VALUES ('STUDENT-AIL', 'COURSE-SD-AUTUM-2019-1', null, '12'),
-       ('STUDENT-AIL', 'COURSE-ES1-AUTUM-2019-1', null, '10'),
+INSERT INTO Student_enrollments (Student_ID, Course_ID, Grade_ID) --OBS: SQL autogenerer enrollment_ID
+VALUES ('STUDENT-AIL', 'COURSE-SD-AUTUM-2019-1', '12'),
+       ('STUDENT-AIL', 'COURSE-ES1-AUTUM-2019-1', '10'),
 
-       ('STUDENT-AYN', 'COURSE-SD-SPRING-2020-1', null, 'no grade'),
-       ('STUDENT-AYN', 'COURSE-ES1-AUTUM-2019-1', null, '12'),
+       ('STUDENT-AYN', 'COURSE-SD-SPRING-2020-1', 'no grade'),
+       ('STUDENT-AYN', 'COURSE-ES1-AUTUM-2019-1', '12'),
 
-       ('STUDENT-AFJ', 'COURSE-SD-AUTUM-2019-1', null, '7'),
-       ('STUDENT-AFJ', 'COURSE-ES1-AUTUM-2019-1', null, '10'),
+       ('STUDENT-AFJ', 'COURSE-SD-AUTUM-2019-1', '7'),
+       ('STUDENT-AFJ', 'COURSE-ES1-AUTUM-2019-1', '10'),
 
-       ('STUDENT-BRB', 'COURSE-SD-SPRING-2020-1', null, 'no grade'),
-       ('STUDENT-BRB', 'COURSE-ES1-AUTUM-2019-1', null, '02'),
+       ('STUDENT-BRB', 'COURSE-SD-SPRING-2020-1', 'no grade'),
+       ('STUDENT-BRB', 'COURSE-ES1-AUTUM-2019-1', '02'),
 
-       ('STUDENT-ABA', 'COURSE-SD-AUTUM-2019-1', null, '10'),
-       ('STUDENT-ABA', 'COURSE-ES1-AUTUM-2019-1', null, '7'),
+       ('STUDENT-ABA', 'COURSE-SD-AUTUM-2019-1', '10'),
+       ('STUDENT-ABA', 'COURSE-ES1-AUTUM-2019-1', '7'),
 
-       ('STUDENT-EEK', 'COURSE-SD-SPRING-2020', null, 'no grade'),
-       ('STUDENT-EEK', 'COURSE-ES1-AUTUM-2019-1', null, '10'),
+       ('STUDENT-EEK', 'COURSE-SD-SPRING-2020', 'no grade'),
+       ('STUDENT-EEK', 'COURSE-ES1-AUTUM-2019-1', '10'),
 
-       ('STUDENT-OFO', 'COURSE-SD-AUTUM-2019-1', null, '4'),
-       ('STUDENT-OFO', 'COURSE-ES1-AUTUM-2019-1', null, '12'),
+       ('STUDENT-OFO', 'COURSE-SD-AUTUM-2019-1', '4'),
+       ('STUDENT-OFO', 'COURSE-ES1-AUTUM-2019-1', '12'),
 
-       ('STUDENT-SLS', 'COURSE-SD-SPRING-2020-1', null, 'no grade'),
-       ('STUDENT-SLS', 'COURSE-ES1-AUTUM-2019-1', null, '12'),
+       ('STUDENT-SLS', 'COURSE-SD-SPRING-2020-1', 'no grade'),
+       ('STUDENT-SLS', 'COURSE-ES1-AUTUM-2019-1', '12'),
 
-       ('STUDENT-TTH', 'COURSE-SD-AUTUM-2019-1', null, '12'),
-       ('STUDENT-TTH', 'COURSE-ES1-AUTUM-2019-1', null, '12'),
+       ('STUDENT-TTH', 'COURSE-SD-AUTUM-2019-1', '12'),
+       ('STUDENT-TTH', 'COURSE-ES1-AUTUM-2019-1', '12'),
 
-       ('STUDENT-JAJ', 'COURSE-SD-SPRING-2020-1', null, 'no grade'),
-       ('STUDENT-JAJ', 'COURSE-ES1-AUTUM-2019-1', null, '7');
+       ('STUDENT-JAJ', 'COURSE-SD-SPRING-2020-1', 'no grade'),
+       ('STUDENT-JAJ', 'COURSE-ES1-AUTUM-2019-1', '7');
+
+
+
+--- ## SQL INJECTIONS ## ---
+
+
+
+-- GETS COURSES TAKEN FOR A STUDENT AND THEIR GRADES
+SELECT Course_name, Grade
+FROM Student_enrollments
+JOIN Grades
+ON Student_enrollments.Grade_ID = Grades.Grade_ID
+JOIN Courses
+ON Student_enrollments.Course_ID = Courses.Course_ID
+JOIN Students
+ON Student_enrollments.Student_ID = Students.Student_ID WHERE Surname = 'Albert';
+
+
+--- GETS THE AVERAGE GRADE FROM A STUDENT
+SELECT Surname, avg(Grade)
+FROM Student_enrollments
+JOIN Grades
+ON Student_enrollments.Grade_ID = Grades.Grade_ID
+JOIN Students
+ON Student_enrollments.Student_ID = Students.Student_ID WHERE Surname = 'Aisha';
+
+
+--- GETS THE AVERAGE FOR A COURSE
+SELECT Course_name, avg(Grade)
+FROM Student_enrollments
+JOIN Grades
+ON Student_enrollments.Grade_ID = Grades.Grade_ID
+JOIN Courses
+ON Student_enrollments.Course_ID = Courses.Course_ID WHERE Course_name = 'Essential Computing 1'
+
+
+
