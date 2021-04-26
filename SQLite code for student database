@@ -6,17 +6,17 @@ DROP TABLE IF EXISTS Courses;
 DROP TABLE IF EXISTS Teachers;
 
 
-
-CREATE TABLE IF NOT EXISTS Students(
+CREATE TABLE IF NOT EXISTS Students
+(
     Student_ID TEXT not null PRIMARY KEY,
-    Surname TEXT not null,
-    Lastname TEXT not null,
-    City_ID  TEXT not null,
+    Surname    TEXT not null,
+    Lastname   TEXT not null,
+    City_ID    TEXT not null,
 
     FOREIGN KEY (City_ID) REFERENCES Cities (City_ID)
 );
 INSERT INTO Students (Student_ID, Surname, Lastname, City_ID)
-VALUES ('STUDENT-AIL', 'Aisha', 'Lincolm', 'CITY-NKBF'),
+VALUES ('STUDENT-AIL', 'Aisha', 'Lincoln', 'CITY-NKBF'),
        ('STUDENT-AYN', 'Anya', 'Nielsen', 'CITY-NKBF'),
        ('STUDENT-AFJ', 'Alfred', 'Jensen', 'CITY-KLS'),
        ('STUDENT-BRB', 'Berta', 'Bertelsen', 'CITY-BILL'),
@@ -29,11 +29,12 @@ VALUES ('STUDENT-AIL', 'Aisha', 'Lincolm', 'CITY-NKBF'),
 
 
 
-CREATE TABLE IF NOT EXISTS Cities(
-    City_ID TEXT not null PRIMARY KEY,
-    City_name TEXT not null,
+CREATE TABLE IF NOT EXISTS Cities
+(
+    City_ID       TEXT not null PRIMARY KEY,
+    City_name     TEXT not null,
     Postal_number INTEGER,
-    Country_name TEXT not null
+    Country_name  TEXT not null
 );
 INSERT INTO Cities (City_ID, City_name, Postal_number, Country_name)
 VALUES ('CITY-NKBF', 'Nykøbing F', 4800, 'Denmark'),
@@ -48,10 +49,11 @@ VALUES ('CITY-NKBF', 'Nykøbing F', 4800, 'Denmark'),
 
 
 
-CREATE TABLE IF NOT EXISTS Teachers(
+CREATE TABLE IF NOT EXISTS Teachers
+(
     Teacher_ID TEXT not null PRIMARY KEY,
-    Surname TEXT not null,
-    Lastname TEXT not null
+    Surname    TEXT not null,
+    Lastname   TEXT not null
 );
 INSERT INTO Teachers (Teacher_ID, Surname, Lastname)
 VALUES ('TEACHER-LN', 'Line', 'Reinhardt'),
@@ -59,25 +61,27 @@ VALUES ('TEACHER-LN', 'Line', 'Reinhardt'),
 
 
 
-CREATE TABLE IF NOT EXISTS Courses(
-    Course_ID TEXT not null PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS Courses
+(
+    Course_ID   TEXT not null PRIMARY KEY,
     Course_name TEXT not null,
-    Teacher_ID TEXT not null,
-    Year TEXT not null,
-    Semester TEXT not null,
+    Teacher_ID  TEXT not null,
+    Year        TEXT not null,
+    Semester    TEXT not null,
 
     FOREIGN KEY (Teacher_ID) REFERENCES Teachers (Teacher_ID)
 );
 INSERT INTO Courses (Course_ID, Course_name, Teacher_ID, Year, Semester)
-VALUES ('COURSE-SD-AUTUMN-2019-1', 'Software Development', 'TEACHER-LN', 2019, 'Autum'),
-       ('COURSE-SD-SPRING-2020-1', 'Software Development', 'TEACHER-LN', 2020, 'Spring'),
-       ('COURSE-ES1-AUTUMN-2019-1', 'Essential Computing 1', 'TEACHER-EB', 2019, 'Autum');
+VALUES ('COURSE-SD-AUTUMN-2019-1', 'Software Development E2019', 'TEACHER-LN', 2019, 'Autumn'),
+       ('COURSE-SD-SPRING-2020-1', 'Software Development F2020', 'TEACHER-LN', 2020, 'Spring'),
+       ('COURSE-EC1-AUTUMN-2019-1', 'Essential Computing 1 E2019', 'TEACHER-EB', 2019, 'Autumn');
 
 
 
-CREATE TABLE IF NOT EXISTS Grades (
+CREATE TABLE IF NOT EXISTS Grades
+(
     Grade_ID TEXT not null PRIMARY KEY,
-    Grade INTEGER
+    Grade    INTEGER
 );
 INSERT INTO Grades (Grade_ID, Grade)
 VALUES ('no grade', null),
@@ -91,11 +95,12 @@ VALUES ('no grade', null),
 
 
 
-CREATE TABLE IF NOT EXISTS Student_enrollments(
+CREATE TABLE IF NOT EXISTS Student_enrollments
+(
     Enrollment_ID INTEGER PRIMARY KEY, -- bliver autogeneret af SQL
-    Student_ID TEXT not null,
-    Course_ID TEXT not null,
-    Grade_ID TEXT not null,
+    Student_ID    TEXT not null,
+    Course_ID     TEXT not null,
+    Grade_ID      TEXT not null,
 
     FOREIGN KEY (Student_ID) REFERENCES Students (Student_ID),
     FOREIGN KEY (Course_ID) REFERENCES Courses (Course_ID),
@@ -103,68 +108,67 @@ CREATE TABLE IF NOT EXISTS Student_enrollments(
 );
 INSERT INTO Student_enrollments (Student_ID, Course_ID, Grade_ID) --OBS: SQL autogenerer enrollment_ID
 VALUES ('STUDENT-AIL', 'COURSE-SD-AUTUMN-2019-1', '12'),
-       ('STUDENT-AIL', 'COURSE-ES1-AUTUMN-2019-1', '10'),
+       ('STUDENT-AIL', 'COURSE-EC1-AUTUMN-2019-1', '10'),
 
        ('STUDENT-AYN', 'COURSE-SD-SPRING-2020-1', 'no grade'),
-       ('STUDENT-AYN', 'COURSE-ES1-AUTUMN-2019-1', '12'),
+       ('STUDENT-AYN', 'COURSE-EC1-AUTUMN-2019-1', '12'),
 
        ('STUDENT-AFJ', 'COURSE-SD-AUTUMN-2019-1', '7'),
-       ('STUDENT-AFJ', 'COURSE-ES1-AUTUMN-2019-1', '10'),
+       ('STUDENT-AFJ', 'COURSE-EC1-AUTUMN-2019-1', '10'),
 
        ('STUDENT-BRB', 'COURSE-SD-SPRING-2020-1', 'no grade'),
-       ('STUDENT-BRB', 'COURSE-ES1-AUTUMN-2019-1', '02'),
+       ('STUDENT-BRB', 'COURSE-EC1-AUTUMN-2019-1', '02'),
 
        ('STUDENT-ABA', 'COURSE-SD-AUTUMN-2019-1', '10'),
-       ('STUDENT-ABA', 'COURSE-ES1-AUTUMN-2019-1', '7'),
+       ('STUDENT-ABA', 'COURSE-EC1-AUTUMN-2019-1', '7'),
 
-       ('STUDENT-EEK', 'COURSE-SD-SPRING-2020', 'no grade'),
-       ('STUDENT-EEK', 'COURSE-ES1-AUTUMN-2019-1', '10'),
+       ('STUDENT-EEK', 'COURSE-SD-SPRING-2020-1', 'no grade'),
+       ('STUDENT-EEK', 'COURSE-EC1-AUTUMN-2019-1', '10'),
 
        ('STUDENT-OFO', 'COURSE-SD-AUTUMN-2019-1', '4'),
-       ('STUDENT-OFO', 'COURSE-ES1-AUTUMN-2019-1', '12'),
+       ('STUDENT-OFO', 'COURSE-EC1-AUTUMN-2019-1', '12'),
 
        ('STUDENT-SLS', 'COURSE-SD-SPRING-2020-1', 'no grade'),
-       ('STUDENT-SLS', 'COURSE-ES1-AUTUMN-2019-1', '12'),
+       ('STUDENT-SLS', 'COURSE-EC1-AUTUMN-2019-1', '12'),
 
        ('STUDENT-TTH', 'COURSE-SD-AUTUMN-2019-1', '12'),
-       ('STUDENT-TTH', 'COURSE-ES1-AUTUMN-2019-1', '12'),
+       ('STUDENT-TTH', 'COURSE-EC1-AUTUMN-2019-1', '12'),
 
        ('STUDENT-JAJ', 'COURSE-SD-SPRING-2020-1', 'no grade'),
-       ('STUDENT-JAJ', 'COURSE-ES1-AUTUMN-2019-1', '7');
+       ('STUDENT-JAJ', 'COURSE-EC1-AUTUMN-2019-1', '7');
 
 
 
 --- ## SQL INJECTIONS ## ---
 
 
-
 -- GETS COURSES TAKEN FOR A STUDENT AND THEIR GRADES
-SELECT Course_name, Grade
+SELECT surname, lastname, grade, avg(grade)
 FROM Student_enrollments
-JOIN Grades
-ON Student_enrollments.Grade_ID = Grades.Grade_ID
-JOIN Courses
-ON Student_enrollments.Course_ID = Courses.Course_ID
-JOIN Students
-ON Student_enrollments.Student_ID = Students.Student_ID WHERE Surname = 'Albert';
+         JOIN Grades
+              ON Student_enrollments.Grade_ID = Grades.Grade_ID
+         JOIN Courses
+              ON Student_enrollments.Course_ID = Courses.Course_ID
+         JOIN Students
+              ON Student_enrollments.Student_ID = Students.Student_ID /*WHERE  Courses.Course_ID = 'COURSE-EC1-AUTUMN-2019-1'
+
 
 
 --- GETS THE AVERAGE GRADE FROM A STUDENT
-SELECT Surname, avg(Grade)
+SELECT avg(grade)
 FROM Student_enrollments
-JOIN Grades
-ON Student_enrollments.Grade_ID = Grades.Grade_ID
-JOIN Students
-ON Student_enrollments.Student_ID = Students.Student_ID WHERE Surname = 'Aisha';
+         JOIN Grades
+              ON Student_enrollments.Grade_ID = Grades.Grade_ID
+         JOIN Students
+              ON Student_enrollments.Student_ID = Students.Student_ID
 
 
 --- GETS THE AVERAGE FOR A COURSE
 SELECT Course_name, avg(Grade)
 FROM Student_enrollments
-JOIN Grades
-ON Student_enrollments.Grade_ID = Grades.Grade_ID
-JOIN Courses
-ON Student_enrollments.Course_ID = Courses.Course_ID WHERE Course_name = 'Essential Computing 1'
-
-
+         JOIN Grades
+              ON Student_enrollments.Grade_ID = Grades.Grade_ID
+         JOIN Courses
+              ON Student_enrollments.Course_ID = Courses.Course_ID
+WHERE Course_name = 'Essential Computing 1 E2019'
 
