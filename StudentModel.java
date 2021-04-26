@@ -102,7 +102,7 @@ public class StudentModel {
             while (rs != null && rs.next()) {
                 avg = rs.getDouble("avg(grade)");
             }
-            returnString = "Average grade: " + avg;
+            returnString = "Total Average: " + avg;
             rs = null;
             return returnString;
         } catch (SQLException e) {
