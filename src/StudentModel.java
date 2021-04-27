@@ -269,4 +269,13 @@ public class StudentModel {
         }
     }
 
+    public void updateGrade(){
+        String command = "";
+        try {
+            stmt.executeUpdate(command);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 }
