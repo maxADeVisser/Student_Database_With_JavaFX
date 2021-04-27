@@ -269,8 +269,10 @@ public class StudentModel {
         }
     }
 
-    public void updateGrade(){
-        String command = "";
+    public void updateGrade(String grade){
+        String command = "UPDATE Student_enrollments SET Grade_ID ='" + grade + "' " +
+                "WHERE course_ID = (SELECT Course_ID FROM Courses WHERE Courses.Course_name = '" + selectedCourse + "') " +
+                "AND Student_ID = (SELECT Student_ID FROM Students WHERE Students.Surname = '"+selectedStudent+"');";
         try {
             stmt.executeUpdate(command);
         } catch (SQLException e) {
