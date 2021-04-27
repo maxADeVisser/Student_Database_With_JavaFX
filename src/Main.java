@@ -32,6 +32,25 @@ public class Main extends Application { //Application is the class holding all t
         window = primaryStage; //renaming for easier understanding of code
         window.setTitle("Student Database System"); //sets the title of the window
 
+        // -- TEXT-AREA STUDENTS
+        TextArea information = new TextArea();
+        information.setEditable(false); // does so that TextArea is not edible
+        information.setMaxWidth(windowWidth / 2);
+        information.setPromptText("Information will be shown here");
+
+        //STUDENT TOP MENU
+        HBox studentTopMenu = new HBox(20); // top menu in studentspanel
+        studentTopMenu.setPadding(new Insets(15, 12, 15, 12));
+        studentTopMenu.setSpacing(10); //spacing between buttons
+        studentTopMenu.setStyle("-fx-background-color: #336699;"); //color
+        TextField searchStudent = new TextField();
+        searchStudent.setPromptText("Search for a student");
+        Button btnSearchButton = new Button("Search");
+        btnSearchButton.setPrefSize(100, 20); //set the size of the button
+        Button btnBackToMenu = new Button("Back to menu");
+        btnBackToMenu.setPrefSize(100, 20); //set the size of the button
+        studentTopMenu.getChildren().addAll(searchStudent, btnSearchButton, btnBackToMenu);
+
         // -- LIST VIEW STUDENTS
         ListView<String> studentListView = new ListView<>(); // specify what type the list is holding. This one holds strings
         studentListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE); // can also be set to select multiple
@@ -46,27 +65,7 @@ public class Main extends Application { //Application is the class holding all t
             System.out.println(e.getMessage());
         }
 
-        // -- TEXT-AREA STUDENTS
-        TextArea information = new TextArea();
-        information.setEditable(false); // does so that TextArea is not edible
-        information.setMaxWidth(windowWidth / 2);
-        information.setPromptText("Information will be shown here");
-
-        //STUDENT TOP MENU
-        HBox studentTopMenu = new HBox(20); // top menu in studentspanel
-        studentTopMenu.setPadding(new Insets(15, 12, 15, 12));
-        studentTopMenu.setSpacing(10); //spacing between buttons
-        studentTopMenu.setStyle("-fx-background-color: #336699;"); //color
-        Label lbSearchStudent = new Label("Insert a student:"); //ved ikke om skal slettes
-        TextField searchStudent = new TextField();
-        searchStudent.setPromptText("Search for a student");
-        Button btnSearchButton = new Button("Search");
-        btnSearchButton.setPrefSize(100, 20); //set the size of the button
-        Button btnBackToMenu = new Button("Back to menu");
-        btnBackToMenu.setPrefSize(100, 20); //set the size of the button
-        studentTopMenu.getChildren().addAll(lbSearchStudent, searchStudent, btnSearchButton, btnBackToMenu);
-
-        // --- BOTTOM MENU ---
+        // --- STUDENT BOTTOM MENU ---
         HBox studentBottomMenu = new HBox(20); // top menu in studentspanel
         studentBottomMenu.setPadding(new Insets(15, 12, 15, 12));
         studentBottomMenu.setSpacing(10); //spacing between buttons
@@ -75,9 +74,7 @@ public class Main extends Application { //Application is the class holding all t
         Button btnAddStudent = new Button("Add Student");
         btnAddStudent.setOnAction(e -> {
             ArrayList<String> studentInformation = AddStudentBox.display(); //returner en ArrayList<String> med information om en studerende
-            if (studentInformation.isEmpty()) {
-                System.out.println("doing nothing"); // SKAL FJERNES NÅR TESTING ER DONE
-            } else {
+            if (!studentInformation.isEmpty()) {
                 try { // VIRKER IKKE HELT. Retunerer 'query does not return ResultSet'
                     SDB.connect();
                     SDB.createStatement();
@@ -87,10 +84,28 @@ public class Main extends Application { //Application is the class holding all t
                 } catch (SQLException ex) {
                     System.out.println(ex.getMessage());
                 }
-
             }
         });
-        studentBottomMenu.getChildren().addAll(btnAddStudent);
+
+        Button btnRemoveStudent = new Button("Remove student");
+        btnRemoveStudent.setOnAction(e -> {
+            if (studentListView.getSelectionModel().getSelectedItem() != null){
+                String message = "Are you sure you want to remove " + studentListView.getSelectionModel().getSelectedItem() + "?";
+                boolean confirmation = ConfirmBox.display("Remove Student", message);
+                if (confirmation){
+                    System.out.println("REMOVE STUDENT " + studentListView.getSelectionModel().getSelectedItem()); // MAKE
+                    try { // THIS IS WHERE THE STUDENT GETS REMOVED
+                        SDB.connect();
+                        SDB.createStatement();
+                        SDB.removeStudent();
+                        SDB.close();
+                    } catch (SQLException ex) {
+                        System.out.println(ex.getMessage());
+                    }
+                }
+            }
+        });
+        studentBottomMenu.getChildren().addAll(btnAddStudent, btnRemoveStudent);
 
 
         // --- STUDENT BORDERPANE --- Layout for the student scene
@@ -131,7 +146,7 @@ public class Main extends Application { //Application is the class holding all t
         // -- TEXT-AREA COURSE
         TextArea informationCourse = new TextArea();
         informationCourse.setEditable(false);
-        informationCourse.setText("Her er der information om kurserne"); // her skal information parses til
+        //informationCourse.setText(); // her skal information parses til
         informationCourse.setMaxWidth(windowWidth / 2);
         informationCourse.setPromptText("Information will be shown here");
 
@@ -146,8 +161,7 @@ public class Main extends Application { //Application is the class holding all t
 
         Button btnEditCourseInformation = new Button("Edit Course Information");
         btnEditCourseInformation.setOnAction(event -> {
-
-            System.out.println("OPEN A NEW WINDOW TO EDIT THE COURSE");
+            boolean test = EditCourse.display();
         });
 
         Button btnGetCourseInformation = new Button("Get Info");
@@ -200,11 +214,9 @@ public class Main extends Application { //Application is the class holding all t
         });
         btnBackToMenuFromCourse.setOnAction(event -> { //uses a lambda expression to call the handle function inside the application class. The button press executes when is after ->. further more we can use lambda expressions to make multiple lines of code happen when pressing a button
             window.setScene(mainScene);
-            System.out.println("Changed to Main Menu");
         });
         btnBackToMenu.setOnAction(event -> { //uses a lambda expression to call the handle function inside the application class. The button press executes when is after ->. further more we can use lambda expressions to make multiple lines of code happen when pressing a button
             window.setScene(mainScene);
-            System.out.println("Changed to Main Menu");
         });
 
         exitButton.setOnAction(event -> closeProgram());
