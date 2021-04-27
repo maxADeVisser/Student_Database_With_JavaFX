@@ -7,6 +7,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class Main extends Application { //Application is the class holding all the javaFX stuff. So we always need to inherit it to use javaFX. futhermore everytime we want to handle a user input, we implement the EventHandler
 
@@ -28,38 +29,12 @@ public class Main extends Application { //Application is the class holding all t
         String url = "jdbc:sqlite:/Users/maxvisser/Documents/RUC/Datalogi/SD/Portfolie 3/Student_database/Students.db";
         StudentModel SDB = new StudentModel(url);
 
-        /*
-       try {
-            SDB.connect();
-            SDB.CreateStatement();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            try {
-                SDB.close();
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-            }
-        }
-        */
-
-
-
-
-
         window = primaryStage; //renaming for easier understanding of code
         window.setTitle("Student Database System"); //sets the title of the window
 
-        // -- LIST VIEW STUDENTS
-        ListView<String> studentListView = new ListView<>(); // specify what type the list is holding. This one holds strings
-        studentListView.getItems().addAll("Aisha", "Per", "Din mor"); // skal addes fra databasen
-        studentListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE); // can also be set to select multiple
-        studentListView.setMinWidth(windowWidth / 3);
-
-        // -- TEXTAREA STUDENTS
+        // -- TEXT-AREA STUDENTS
         TextArea information = new TextArea();
-        information.setEditable(false); // does so that field is not edible
-        //information.setText("test"); // her skal information parses til
+        information.setEditable(false); // does so that TextArea is not edible
         information.setMaxWidth(windowWidth / 2);
         information.setPromptText("Information will be shown here");
 
@@ -68,29 +43,85 @@ public class Main extends Application { //Application is the class holding all t
         studentTopMenu.setPadding(new Insets(15, 12, 15, 12));
         studentTopMenu.setSpacing(10); //spacing between buttons
         studentTopMenu.setStyle("-fx-background-color: #336699;"); //color
-        Label lbSearchStudent = new Label("Insert a student:"); //ved ikke om skal slettes
         TextField searchStudent = new TextField();
         searchStudent.setPromptText("Search for a student");
         Button btnSearchButton = new Button("Search");
         btnSearchButton.setPrefSize(100, 20); //set the size of the button
         Button btnBackToMenu = new Button("Back to menu");
         btnBackToMenu.setPrefSize(100, 20); //set the size of the button
-        studentTopMenu.getChildren().addAll(lbSearchStudent, searchStudent, btnSearchButton, btnBackToMenu);
+        studentTopMenu.getChildren().addAll(searchStudent, btnSearchButton, btnBackToMenu);
 
-        // --- BOTTOM MENU ---
+        // -- LIST VIEW STUDENTS
+        ListView<String> studentListView = new ListView<>(); // specify what type the list is holding. This one holds strings
+        studentListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE); // can also be set to select multiple
+        studentListView.setMinWidth(windowWidth / 3);
+        try {
+            SDB.connect();
+            SDB.createStatement();
+            ArrayList<String> studentNames = SDB.queryGetStudentNames();
+            SDB.close();
+            studentListView.getItems().addAll(studentNames); //Adds the different studentNames
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        // --- STUDENT BOTTOM MENU ---
         HBox studentBottomMenu = new HBox(20); // top menu in studentspanel
         studentBottomMenu.setPadding(new Insets(15, 12, 15, 12));
         studentBottomMenu.setSpacing(10); //spacing between buttons
         studentBottomMenu.setStyle("-fx-background-color: #336699;"); //color
 
         Button btnAddStudent = new Button("Add Student");
-        btnAddStudent.setOnAction(e -> { // DER ER EN FEJL HVOR HVIS MAN INDSÆTTER ET NAVN OG DEREFTER PRØVER IGEN OG TRYKKER CANCEL, INDSÆTTER DEN NAVNET IGEN
-            String name = AddStudentBox.display("Add Student", "Enter a student name:"); //returner en ArrayList<String> med information om en studerende
-            if (name != null) {
-                studentListView.getItems().add(name); // adds the student to the ListView. Needs to be inserted in the database aswell
+        btnAddStudent.setOnAction(e -> {
+            ArrayList<String> studentInformation = AddStudentBox.display(); //returner en ArrayList<String> med information om en studerende
+            if (!studentInformation.isEmpty()) {
+                try { // VIRKER IKKE HELT. Retunerer 'query does not return ResultSet'
+                    SDB.connect();
+                    SDB.createStatement();
+                    SDB.addStudent(studentInformation.get(0), studentInformation.get(1), studentInformation.get(2), studentInformation.get(3));
+                    // UPDATE THE LIST HERE
+                    SDB.close();
+                } catch (SQLException ex) {
+                    System.out.println(ex.getMessage());
+                }
             }
         });
-        studentBottomMenu.getChildren().addAll(btnAddStudent);
+
+        Button btnRemoveStudent = new Button("Remove student");
+        btnRemoveStudent.setOnAction(e -> {
+            if (studentListView.getSelectionModel().getSelectedItem() != null){
+                String message = "Are you sure you want to remove " + studentListView.getSelectionModel().getSelectedItem() + "?";
+                boolean confirmation = ConfirmBox.display("Remove Student", message);
+                if (confirmation){
+                    System.out.println("REMOVE STUDENT " + studentListView.getSelectionModel().getSelectedItem()); // MAKE
+                    try { // THIS IS WHERE THE STUDENT GETS REMOVED
+                        SDB.connect();
+                        SDB.createStatement();
+                        SDB.removeStudent();
+                        SDB.close();
+                    } catch (SQLException ex) {
+                        System.out.println(ex.getMessage());
+                    }
+                }
+            }
+        });
+
+        // -- Get Student Info Button
+        Button btnGetStudentInformation = new Button("Get Info");
+        btnGetStudentInformation.setOnAction(event -> {
+            if (studentListView.getSelectionModel().getSelectedItem() != null){
+                try {
+                    SDB.connect();
+                    SDB.createStatement();
+                    SDB.selectedStudent = studentListView.getSelectionModel().getSelectedItem();
+                    information.setText(SDB.studentCoursesQuery() + "\n" + SDB.averageStudentGradeQuery());
+                    SDB.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        });
+        studentBottomMenu.getChildren().addAll(btnAddStudent, btnRemoveStudent, btnGetStudentInformation);
 
 
         // --- STUDENT BORDERPANE --- Layout for the student scene
@@ -106,48 +137,63 @@ public class Main extends Application { //Application is the class holding all t
         courseTopMenu.setPadding(new Insets(15, 12, 15, 12));
         courseTopMenu.setSpacing(10); //spacing between buttons
         courseTopMenu.setStyle("-fx-background-color: #336699;"); //changes the colour to blue for the top menu
-        Label lbSearchCourse = new Label("Insert a student:"); //ved ikke om skal slettes
         TextField searchCourse = new TextField();
         searchCourse.setPromptText("Search for a student");
         Button btnSearchButtonC = new Button("Search");
         btnSearchButtonC.setPrefSize(100, 20); //set the size of the button
         Button btnBackToMenuFromCourse = new Button("Back to menu");
         btnBackToMenuFromCourse.setPrefSize(100, 20); //set the size of the button
-        courseTopMenu.getChildren().addAll(lbSearchCourse, searchCourse, btnSearchButtonC, btnBackToMenuFromCourse);
+        courseTopMenu.getChildren().addAll(searchCourse, btnSearchButtonC, btnBackToMenuFromCourse);
 
         // -- LIST VIEW COURSE
         ListView<String> courseListView = new ListView<>(); // specify what type the list is holding. This one holds strings
-        courseListView.getItems().addAll("Software Development F2020", "Software Development E2019", "Essential Computing 1 E2019");
         courseListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE); // can also be set to select multiple
         courseListView.setMinWidth(windowWidth / 3);
+        try {
+            SDB.connect();
+            SDB.createStatement();
+            ArrayList<String> courseNames = SDB.queryGetCourses();
+            SDB.close();
+            courseListView.getItems().addAll(courseNames); //Adds the different courses
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
 
         // -- TEXT-AREA COURSE
         TextArea informationCourse = new TextArea();
         informationCourse.setEditable(false);
-        informationCourse.setText("Her er der information om kurserne"); // her skal information parses til
+        //informationCourse.setText(); // her skal information parses til
         informationCourse.setMaxWidth(windowWidth / 2);
         informationCourse.setPromptText("Information will be shown here");
 
-        // -- COURSE BOTTOM MENU
+        // ----- COURSE BOTTOM MENU
         HBox courseBottomMenu = new HBox(20);
         courseBottomMenu.setPadding(new Insets(15, 12, 15, 12));
         courseBottomMenu.setSpacing(10); //spacing between buttons
         courseBottomMenu.setStyle("-fx-background-color: #336699;"); //color
+
         Button btnAddCourse = new Button("Add Course");
-        btnAddCourse.setOnAction(event -> AlertBox.display("Add Course", "im sorry, i havnt implemented this feature yet"));
+        btnAddCourse.setOnAction(event -> AlertBox.display("Add Course", "im sorry, i haven't implemented this feature yet"));
+
+        Button btnEditCourseInformation = new Button("Edit Course Information");
+        btnEditCourseInformation.setOnAction(event -> {
+            boolean test = EditCourse.display();
+        });
+
         Button btnGetCourseInformation = new Button("Get Info");
         btnGetCourseInformation.setOnAction(event -> {
             try {
                 SDB.connect();
-                SDB.CreateStatement();
+                SDB.createStatement();
                 SDB.selectedCourse = courseListView.getSelectionModel().getSelectedItem();
-                informationCourse.setText(SDB.CourseInfoQuery() + "\n" + SDB.AverageCourseGradeQuery());
+                informationCourse.setText(SDB.courseInfoQuery() + "\n" + SDB.averageCourseGradeQuery());
                 SDB.close();
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
         });
-        courseBottomMenu.getChildren().addAll(btnAddCourse, btnGetCourseInformation);
+        courseBottomMenu.getChildren().addAll(btnAddCourse, btnGetCourseInformation, btnEditCourseInformation);
+
 
         // --- COURSE BORDERPANE --- Layout for the course scene
         BorderPane courseLayout = new BorderPane();
@@ -156,6 +202,7 @@ public class Main extends Application { //Application is the class holding all t
         courseLayout.setCenter(informationCourse);
         courseLayout.setBottom(courseBottomMenu);
 
+        //##############################
 
         // - temporary main scene
         VBox mainLayout = new VBox(20); // used for mainScene
@@ -183,11 +230,9 @@ public class Main extends Application { //Application is the class holding all t
         });
         btnBackToMenuFromCourse.setOnAction(event -> { //uses a lambda expression to call the handle function inside the application class. The button press executes when is after ->. further more we can use lambda expressions to make multiple lines of code happen when pressing a button
             window.setScene(mainScene);
-            System.out.println("Changed to Main Menu");
         });
         btnBackToMenu.setOnAction(event -> { //uses a lambda expression to call the handle function inside the application class. The button press executes when is after ->. further more we can use lambda expressions to make multiple lines of code happen when pressing a button
             window.setScene(mainScene);
-            System.out.println("Changed to Main Menu");
         });
 
         exitButton.setOnAction(event -> closeProgram());
@@ -199,8 +244,8 @@ public class Main extends Application { //Application is the class holding all t
         btnStudent.setOnAction(event -> window.setScene(studentScene));
         btnCourse.setOnAction(event -> window.setScene(courseScene));
 
-        window.setScene(mainScene); // initially sets the scene to the primaryScene
-        window.show(); // opens the application window
+        window.setScene(mainScene);
+        window.show();
 
     } // ### JavaFX Main code stops here ###
 
