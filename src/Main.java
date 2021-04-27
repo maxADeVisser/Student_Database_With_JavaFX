@@ -44,14 +44,13 @@ public class Main extends Application { //Application is the class holding all t
         studentTopMenu.setPadding(new Insets(15, 12, 15, 12));
         studentTopMenu.setSpacing(10); //spacing between buttons
         studentTopMenu.setStyle("-fx-background-color: #336699;"); //color
-        TextField searchStudent = new TextField();
-        searchStudent.setPromptText("Search for a student");
-        Button btnBackToMenu = new Button("Back to menu");
+
+        Button btnBackToMenu = new Button("Back");
         btnBackToMenu.setPrefSize(100, 20); //set the size of the button
         btnBackToMenu.setOnAction(event -> { //uses a lambda expression to call the handle function inside the application class. The button press executes when is after ->. further more we can use lambda expressions to make multiple lines of code happen when pressing a button
             window.setScene(mainScene);
         });
-        studentTopMenu.getChildren().addAll(searchStudent, btnBackToMenu);
+        studentTopMenu.getChildren().add(btnBackToMenu);
 
         // -- STUDENTSCENE LIST VIEW
         ListView<String> studentListView = new ListView<>(); // specify what type the list is holding. This one holds strings
@@ -97,14 +96,12 @@ public class Main extends Application { //Application is the class holding all t
         courseTopMenu.setPadding(new Insets(15, 12, 15, 12));
         courseTopMenu.setSpacing(10); //spacing between buttons
         courseTopMenu.setStyle("-fx-background-color: #336699;"); //changes the colour to blue for the top menu
-        TextField searchCourse = new TextField();
-        searchCourse.setPromptText("Search for a Course");
-        Button btnBackToMenuFromCourse = new Button("Back to menu");
+        Button btnBackToMenuFromCourse = new Button("Back");
         btnBackToMenuFromCourse.setPrefSize(100, 20); //set the size of the button
         btnBackToMenuFromCourse.setOnAction(event -> { //uses a lambda expression to call the handle function inside the application class. The button press executes when is after ->. further more we can use lambda expressions to make multiple lines of code happen when pressing a button
             window.setScene(mainScene);
         });
-        courseTopMenu.getChildren().addAll(searchCourse, btnBackToMenuFromCourse);
+        courseTopMenu.getChildren().addAll(btnBackToMenuFromCourse);
 
         // -- COURSE LIST VIEW
         ListView<String> courseListView = new ListView<>(); // specify what type the list is holding. This one holds strings
@@ -130,7 +127,7 @@ public class Main extends Application { //Application is the class holding all t
         Button btnEditCourseInformation = new Button("Edit Course Information");
         btnEditCourseInformation.setOnAction(event -> {
             if (courseListView.getSelectionModel().getSelectedItem() != null) {
-                SDB.selectedCourse = courseListView.getSelectionModel().getSelectedItem(); //VIRKER
+                SDB.selectedCourse = courseListView.getSelectionModel().getSelectedItem();
                 EditCourse.display(SDB);
             }
         });
@@ -149,8 +146,6 @@ public class Main extends Application { //Application is the class holding all t
         courseLayout.setLeft(courseListView);
         courseLayout.setCenter(informationCourse);
         courseLayout.setBottom(courseBottomMenu);
-
-        //##############################
 
         // - temporary main scene
         VBox mainLayout = new VBox(20); // used for mainScene
