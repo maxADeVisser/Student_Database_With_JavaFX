@@ -61,16 +61,7 @@ public class Main extends Application { //Application is the class holding all t
         ArrayList<String> studentNames = SDB.queryGetStudentNames();
         studentListView.getItems().addAll(studentNames); //Adds the different studentNames
         closeConnectionToDataBase(SDB);
-
-        // --- STUDENTSCENE BOTTOM MENU ---
-        HBox studentBottomMenu = new HBox(20); // top menu in studentspanel
-        studentBottomMenu.setPadding(new Insets(15, 12, 15, 12));
-        studentBottomMenu.setSpacing(10); //spacing between buttons
-        studentBottomMenu.setStyle("-fx-background-color: #336699;"); //color
-
-        // -- STUDENTSCENE GET STUDENTINFORMATION BUTTON
-        Button btnGetStudentInformation = new Button("Get Info");
-        btnGetStudentInformation.setOnAction(event -> {
+        studentListView.getSelectionModel().selectedItemProperty().addListener((v, oldValue, newValue) -> {
             if (studentListView.getSelectionModel().getSelectedItem() != null) {
                 connectToDataBase(SDB);
                 SDB.selectedStudent = studentListView.getSelectionModel().getSelectedItem();
@@ -78,7 +69,15 @@ public class Main extends Application { //Application is the class holding all t
                 closeConnectionToDataBase(SDB);
             }
         });
-        studentBottomMenu.getChildren().addAll(btnGetStudentInformation);
+
+        // --- STUDENTSCENE BOTTOM MENU
+        HBox studentBottomMenu = new HBox(20); // top menu in studentspanel
+        studentBottomMenu.setPadding(new Insets(15, 12, 15, 12));
+        studentBottomMenu.setSpacing(10); //spacing between buttons
+        studentBottomMenu.setStyle("-fx-background-color: #336699;"); //color
+
+        Label a = new Label("THIS SPACE IS RESERVED FOR BUTTONS IN THE FUTURE");
+        studentBottomMenu.getChildren().addAll(a);
 
 
         // --- STUDENTSCENE LAYOUT BORDERPANE ---
@@ -167,7 +166,7 @@ public class Main extends Application { //Application is the class holding all t
         exitButton.setOnAction(event -> closeProgram());
         mainLayout.getChildren().addAll(mainWindowLabel, btnStudent, btnCourse, exitButton);
 
-        // --- D
+        // --- SCENES
         studentScene = new Scene(studentLayout, windowWidth, windowHeight); // creates the main scene
         courseScene = new Scene(courseLayout, windowWidth, windowHeight);
         mainScene = new Scene(mainLayout, windowWidth, windowHeight);
@@ -186,7 +185,7 @@ public class Main extends Application { //Application is the class holding all t
 
     } // ### JavaFX Main code stops here ###
 
-
+    // METHODS USED BY JAVAFX:
     public void connectToDataBase(StudentModel SDB){
         try{
             SDB.connect();
