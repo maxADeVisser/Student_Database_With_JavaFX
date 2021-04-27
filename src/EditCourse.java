@@ -1,4 +1,3 @@
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,9 +12,7 @@ import java.util.ArrayList;
 
 public class EditCourse {
 
-    public static void display(String course) {
-        String url = "jdbc:sqlite:/Users/maxvisser/Documents/RUC/Datalogi/SD/Portfolie 3/Student_database/Students.db";
-        StudentModel SDB = new StudentModel(url);
+    public static void display(StudentModel SDB) {
 
         int windowWidth = 400;
         int windowHeight = 300;
@@ -38,10 +35,19 @@ public class EditCourse {
         ComboBox<String> gradeCombobox = new ComboBox<>();
         gradeCombobox.setPromptText("Choose Grade");
         ArrayList<String> grades = SDB.getAllGrades();
-        gradeCombobox.getItems().addAll(grades); //Adds the different studentNames
+        gradeCombobox.getItems().addAll(grades); //Adds the different studentNames to the combobox
 
-        gradeCombobox.setOnAction(event -> {
-            System.out.println("UPDATE GRADE HERE");
+        gradeCombobox.setOnAction(event -> { //UPDATING GRADE
+            try{
+                SDB.connect();
+                SDB.createStatement();
+                SDB.updateGrade(gradeCombobox.getValue());
+                System.out.println("Grade updated");
+                SDB.close();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+
         });
 
         //STUDENT CURRENT GRADE LABEL
@@ -55,24 +61,20 @@ public class EditCourse {
         ListView<String> studentList = new ListView<>();
         studentList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE); // can also be set to select multiple
         studentList.setMinWidth(200);
-        ArrayList<String> studentNames = SDB.queryGetStudentNames();
+        ArrayList<String> studentNames = SDB.getStudentsInCourse();
         studentList.getItems().addAll(studentNames); //Adds the different studentNames
+
         studentList.getSelectionModel().selectedItemProperty().addListener((v, oldValue, newValue) -> { // adds a listener such that we can execute code when something is choosen in the list
             SDB.selectedStudent = studentList.getSelectionModel().getSelectedItem();
             try{
                 SDB.connect();
                 SDB.createStatement();
-                currentGrade.setText(SDB.studentCourseGradeQuery(course));
+                currentGrade.setText(SDB.studentCourseGradeQuery());
                 SDB.close();
             } catch (SQLException ex){
                 System.out.println(ex.getMessage());
             }
         });
-
-
-        Button btnUpdateInformation = new Button("Update Information");
-        btnUpdateInformation.setOnAction(e -> System.out.println("DO A UPDATE HERE"));
-
 
         VBox layout1 = new VBox(20);
         layout1.setPadding(new Insets(15, 12, 15, 12));
@@ -99,3 +101,5 @@ public class EditCourse {
 
     }
 }
+
+
