@@ -194,27 +194,6 @@ public class StudentModel {
         return grade;
     }
 
-    public void addStudent(String ID, String surname, String lastname, String cityID) {
-        String command = "INSERT INTO Students (Student_ID, Surname, Lastname, City_ID)\n" +
-                "VALUES ('" + ID + "', '" + surname + "', '" + lastname + "', '" + cityID + "')";
-        try {
-            stmt.executeUpdate(command);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public void removeStudent() { // SKAL LAVES FÆRDIG. VIRKER IKKE ENDNU
-        String command = "DELETE FROM Students WHERE Surname = 'Max';";
-        String command1 = "DELETE FROM Student_enrollments WHERE Student_ID = 'STUDENT-MDV';";
-        try {
-            stmt.executeUpdate(command);
-            stmt.executeUpdate(command1);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     public ArrayList<String> queryGetStudentNames() {
         ArrayList<String> studentNames = new ArrayList<>();
         String query = "SELECT Surname FROM Students;";
