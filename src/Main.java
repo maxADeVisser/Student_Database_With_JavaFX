@@ -11,12 +11,12 @@ import java.util.ArrayList;
 
 public class Main extends Application { //Application is the class holding all the javaFX stuff. So we always need to inherit it to use javaFX. futhermore everytime we want to handle a user input, we implement the EventHandler
 
-    Stage window;
+
+    Stage window; // Main Window
     Scene studentScene, courseScene, mainScene;
 
-    int windowWidth = 800;
-    int windowHeight = 500;
-
+    int windowWidth = 800; //Width of the application
+    int windowHeight = 500; // Height of the application
 
     public static void main(String[] args) {
         launch(args); //a method inside the Application class that launches javaFX application
@@ -89,10 +89,10 @@ public class Main extends Application { //Application is the class holding all t
 
         Button btnRemoveStudent = new Button("Remove student");
         btnRemoveStudent.setOnAction(e -> {
-            if (studentListView.getSelectionModel().getSelectedItem() != null){
+            if (studentListView.getSelectionModel().getSelectedItem() != null) {
                 String message = "Are you sure you want to remove " + studentListView.getSelectionModel().getSelectedItem() + "?";
                 boolean confirmation = ConfirmBox.display("Remove Student", message);
-                if (confirmation){
+                if (confirmation) {
                     System.out.println("REMOVE STUDENT " + studentListView.getSelectionModel().getSelectedItem()); // MAKE
                     try { // THIS IS WHERE THE STUDENT GETS REMOVED
                         SDB.connect();
@@ -109,12 +109,12 @@ public class Main extends Application { //Application is the class holding all t
         // -- Get Student Info Button
         Button btnGetStudentInformation = new Button("Get Info");
         btnGetStudentInformation.setOnAction(event -> {
-            if (studentListView.getSelectionModel().getSelectedItem() != null){
+            if (studentListView.getSelectionModel().getSelectedItem() != null) {
                 try {
                     SDB.connect();
                     SDB.createStatement();
                     SDB.selectedStudent = studentListView.getSelectionModel().getSelectedItem();
-                    information.setText(SDB.studentCoursesQuery() + "\n" + SDB.averageStudentGradeQuery());
+                    information.setText(SDB.studentCoursesGradeQuery() + "\n" + SDB.averageStudentGradeQuery());
                     SDB.close();
                 } catch (SQLException e) {
                     System.out.println(e.getMessage());
@@ -145,7 +145,7 @@ public class Main extends Application { //Application is the class holding all t
         btnBackToMenuFromCourse.setPrefSize(100, 20); //set the size of the button
         courseTopMenu.getChildren().addAll(searchCourse, btnSearchButtonC, btnBackToMenuFromCourse);
 
-        // -- LIST VIEW COURSE
+        // -- COURSE LIST VIEW
         ListView<String> courseListView = new ListView<>(); // specify what type the list is holding. This one holds strings
         courseListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE); // can also be set to select multiple
         courseListView.setMinWidth(windowWidth / 3);
@@ -162,7 +162,6 @@ public class Main extends Application { //Application is the class holding all t
         // -- TEXT-AREA COURSE
         TextArea informationCourse = new TextArea();
         informationCourse.setEditable(false);
-        //informationCourse.setText(); // her skal information parses til
         informationCourse.setMaxWidth(windowWidth / 2);
         informationCourse.setPromptText("Information will be shown here");
 
@@ -177,11 +176,13 @@ public class Main extends Application { //Application is the class holding all t
 
         Button btnEditCourseInformation = new Button("Edit Course Information");
         btnEditCourseInformation.setOnAction(event -> {
-            boolean test = EditCourse.display();
+            if (courseListView.getSelectionModel().getSelectedItem() != null) {
+                SDB.selectedCourse = courseListView.getSelectionModel().getSelectedItem(); //VIRKER
+                EditCourse.display(SDB);
+            }
         });
 
-        Button btnGetCourseInformation = new Button("Get Info");
-        btnGetCourseInformation.setOnAction(event -> {
+        courseListView.getSelectionModel().selectedItemProperty().addListener((v, oldValue, newValue) -> {
             try {
                 SDB.connect();
                 SDB.createStatement();
@@ -192,7 +193,7 @@ public class Main extends Application { //Application is the class holding all t
                 System.out.println(e.getMessage());
             }
         });
-        courseBottomMenu.getChildren().addAll(btnAddCourse, btnGetCourseInformation, btnEditCourseInformation);
+        courseBottomMenu.getChildren().addAll(btnAddCourse, btnEditCourseInformation);
 
 
         // --- COURSE BORDERPANE --- Layout for the course scene
