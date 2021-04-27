@@ -11,7 +11,6 @@ import java.util.ArrayList;
 
 public class Main extends Application { //Application is the class holding all the javaFX stuff. So we always need to inherit it to use javaFX. futhermore everytime we want to handle a user input, we implement the EventHandler
 
-
     Stage window; // Main Window
     Scene studentScene, courseScene, mainScene;
 
@@ -25,12 +24,15 @@ public class Main extends Application { //Application is the class holding all t
     @Override
     public void start(Stage primaryStage) throws Exception { //all the code inside here is the main javaFX code
 
-        String url = "jdbc:sqlite:/Users/maxvisser/Documents/RUC/Datalogi/SD/Portfolie 3/Student_database/Students.db";
+        String url = "jdbc:sqlite:/Users/sebastian/IdeaProjects/forsøg1eksamen/Students.db";
         StudentModel SDB = new StudentModel(url);
 
         window = primaryStage; //renaming for easier understanding of code
         window.setTitle("Student Database System"); //sets the title of the window
 
+        // ####################################
+        //  STUDENT SCENE :
+        // ####################################
         // -- TEXT-AREA STUDENTSCENE
         TextArea information = new TextArea();
         information.setEditable(false); // does so that TextArea is not edible
@@ -55,73 +57,27 @@ public class Main extends Application { //Application is the class holding all t
         ListView<String> studentListView = new ListView<>(); // specify what type the list is holding. This one holds strings
         studentListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE); // can also be set to select multiple
         studentListView.setMinWidth(windowWidth / 3);
-        try {
-            SDB.connect();
-            SDB.createStatement();
-            ArrayList<String> studentNames = SDB.queryGetStudentNames();
-            SDB.close();
-            studentListView.getItems().addAll(studentNames); //Adds the different studentNames
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        connectToDataBase(SDB);
+        ArrayList<String> studentNames = SDB.queryGetStudentNames();
+        studentListView.getItems().addAll(studentNames); //Adds the different studentNames
+        closeConnectionToDataBase(SDB);
 
-        // --- STUDENTSCENE BOTTOM MENU ---
+        // --- STUDENT BOTTOM MENU ---
         HBox studentBottomMenu = new HBox(20); // top menu in studentspanel
         studentBottomMenu.setPadding(new Insets(15, 12, 15, 12));
         studentBottomMenu.setSpacing(10); //spacing between buttons
         studentBottomMenu.setStyle("-fx-background-color: #336699;"); //color
 
-        Button btnAddStudent = new Button("Add Student");
-        btnAddStudent.setOnAction(e -> {
-            ArrayList<String> studentInformation = AddStudentBox.display(); //returner en ArrayList<String> med information om en studerende
-            if (!studentInformation.isEmpty()) {
-                try { // VIRKER IKKE HELT. Retunerer 'query does not return ResultSet'
-                    SDB.connect();
-                    SDB.createStatement();
-                    SDB.addStudent(studentInformation.get(0), studentInformation.get(1), studentInformation.get(2), studentInformation.get(3));
-                    // UPDATE THE LIST HERE
-                    SDB.close();
-                } catch (SQLException ex) {
-                    System.out.println(ex.getMessage());
-                }
-            }
-        });
-
-        Button btnRemoveStudent = new Button("Remove student");
-        btnRemoveStudent.setOnAction(e -> {
-            if (studentListView.getSelectionModel().getSelectedItem() != null) {
-                String message = "Are you sure you want to remove " + studentListView.getSelectionModel().getSelectedItem() + "?";
-                boolean confirmation = ConfirmBox.display("Remove Student", message);
-                if (confirmation) {
-                    System.out.println("REMOVE STUDENT " + studentListView.getSelectionModel().getSelectedItem()); // MAKE
-                    try { // THIS IS WHERE THE STUDENT GETS REMOVED
-                        SDB.connect();
-                        SDB.createStatement();
-                        SDB.removeStudent();
-                        SDB.close();
-                    } catch (SQLException ex) {
-                        System.out.println(ex.getMessage());
-                    }
-                }
-            }
-        });
-
         // -- STUDENTSCENE GET STUDENTINFORMATION BUTTON
-        Button btnGetStudentInformation = new Button("Get Info");
-        btnGetStudentInformation.setOnAction(event -> {
+        studentListView.getSelectionModel().selectedItemProperty().addListener((v, oldValue, newValue) -> {
             if (studentListView.getSelectionModel().getSelectedItem() != null) {
-                try {
-                    SDB.connect();
-                    SDB.createStatement();
-                    SDB.selectedStudent = studentListView.getSelectionModel().getSelectedItem();
-                    information.setText(SDB.studentCoursesGradeQuery() + "\n" + SDB.averageStudentGradeQuery());
-                    SDB.close();
-                } catch (SQLException e) {
-                    System.out.println(e.getMessage());
-                }
+                connectToDataBase(SDB);
+                SDB.selectedStudent = studentListView.getSelectionModel().getSelectedItem();
+                information.setText(SDB.studentCoursesGradeQuery() + "\n" + SDB.averageStudentGradeQuery());
+                closeConnectionToDataBase(SDB);
             }
         });
-        studentBottomMenu.getChildren().addAll(btnAddStudent, btnRemoveStudent, btnGetStudentInformation);
+        //studentBottomMenu.getChildren().addAll(btnGetStudentInformation);
 
 
         // --- STUDENTSCENE LAYOUT BORDERPANE ---
@@ -131,6 +87,10 @@ public class Main extends Application { //Application is the class holding all t
         studentLayout.setCenter(information);
         studentLayout.setBottom(studentBottomMenu);
 
+
+        // ####################################
+        //  COURSE SCENE :
+        // ####################################
 
         // TOP MENU COURSE
         HBox courseTopMenu = new HBox(20); // top menu in studentspanel
@@ -150,15 +110,10 @@ public class Main extends Application { //Application is the class holding all t
         ListView<String> courseListView = new ListView<>(); // specify what type the list is holding. This one holds strings
         courseListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE); // can also be set to select multiple
         courseListView.setMinWidth(windowWidth / 3);
-        try {
-            SDB.connect();
-            SDB.createStatement();
-            ArrayList<String> courseNames = SDB.queryGetCourses();
-            SDB.close();
-            courseListView.getItems().addAll(courseNames); //Adds the different courses
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        connectToDataBase(SDB);
+        ArrayList<String> courseNames = SDB.queryGetCourses();
+        courseListView.getItems().addAll(courseNames); //Adds the different courses
+        closeConnectionToDataBase(SDB);
 
         // -- TEXT-AREA COURSE
         TextArea informationCourse = new TextArea();
@@ -172,9 +127,6 @@ public class Main extends Application { //Application is the class holding all t
         courseBottomMenu.setSpacing(10); //spacing between buttons
         courseBottomMenu.setStyle("-fx-background-color: #336699;"); //color
 
-        Button btnAddCourse = new Button("Add Course");
-        btnAddCourse.setOnAction(event -> AlertBox.display("Add Course", "im sorry, i haven't implemented this feature yet"));
-
         Button btnEditCourseInformation = new Button("Edit Course Information");
         btnEditCourseInformation.setOnAction(event -> {
             if (courseListView.getSelectionModel().getSelectedItem() != null) {
@@ -184,18 +136,12 @@ public class Main extends Application { //Application is the class holding all t
         });
 
         courseListView.getSelectionModel().selectedItemProperty().addListener((v, oldValue, newValue) -> {
-            try {
-                SDB.connect();
-                SDB.createStatement();
-                SDB.selectedCourse = courseListView.getSelectionModel().getSelectedItem();
-                informationCourse.setText(SDB.courseInfoQuery() + "\n" + SDB.averageCourseGradeQuery());
-                SDB.close();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
+            connectToDataBase(SDB);
+            SDB.selectedCourse = courseListView.getSelectionModel().getSelectedItem();
+            informationCourse.setText(SDB.courseInfoQuery() + "\n" + SDB.averageCourseGradeQuery());
+            closeConnectionToDataBase(SDB);
         });
-        courseBottomMenu.getChildren().addAll(btnAddCourse, btnEditCourseInformation);
-
+        courseBottomMenu.getChildren().add(btnEditCourseInformation);
 
         // --- COURSE BORDERPANE --- Layout for the course scene
         BorderPane courseLayout = new BorderPane();
@@ -208,13 +154,12 @@ public class Main extends Application { //Application is the class holding all t
 
         // - temporary main scene
         VBox mainLayout = new VBox(20); // used for mainScene
-        Label mainWindowLabel = new Label("Main Window");
         mainLayout.setAlignment(Pos.CENTER);
-        Button btnStudent = new Button("Administrate Students");
-        Button btnCourse = new Button("Administrate Courses");
+        Button btnStudent = new Button("Students Menu");
+        Button btnCourse = new Button("Courses Menu");
         Button exitButton = new Button("Exit");
         exitButton.setOnAction(event -> closeProgram());
-        mainLayout.getChildren().addAll(mainWindowLabel, btnStudent, btnCourse, exitButton);
+        mainLayout.getChildren().addAll(btnStudent, btnCourse, exitButton);
 
         // --- D
         studentScene = new Scene(studentLayout, windowWidth, windowHeight); // creates the main scene
@@ -234,6 +179,24 @@ public class Main extends Application { //Application is the class holding all t
         window.show();
 
     } // ### JavaFX Main code stops here ###
+
+
+    public void connectToDataBase(StudentModel SDB){
+        try{
+            SDB.connect();
+            SDB.createStatement();
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void closeConnectionToDataBase(StudentModel SDB){
+        try{
+            SDB.close();
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
 
     public void closeProgram() { //method for closing the program
         boolean confirmation = ConfirmBox.display("ATTENTION", "Are you sure you want to close?");
