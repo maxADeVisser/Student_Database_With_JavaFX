@@ -1,4 +1,3 @@
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -36,11 +35,19 @@ public class EditCourse {
         ComboBox<String> gradeCombobox = new ComboBox<>();
         gradeCombobox.setPromptText("Choose Grade");
         ArrayList<String> grades = SDB.getAllGrades();
-        gradeCombobox.getItems().addAll(grades); //Adds the different studentNames
+        gradeCombobox.getItems().addAll(grades); //Adds the different studentNames to the combobox
 
-        gradeCombobox.setOnAction(event -> {
-            // UPDATE GRADE VALUE HERE !!!!!!!!!!!!!!!!!!!!!!
-            System.out.println(gradeCombobox.getValue());
+        gradeCombobox.setOnAction(event -> { //UPDATING GRADE
+            try{
+                SDB.connect();
+                SDB.createStatement();
+                SDB.updateGrade(gradeCombobox.getValue());
+                System.out.println("Grade updated");
+                SDB.close();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+
         });
 
         //STUDENT CURRENT GRADE LABEL
