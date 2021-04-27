@@ -34,7 +34,7 @@ public class StudentModel {
     // -- DIFFERENT QUERY METHODS:
     public String courseInfoQuery() {
         String returnString = "";
-        String queryCourse = "SELECT *" + //We find everything in the Students and courses tables. We then joins the student IDs and the course IDS with their respective tables from the Student_enrollment table.
+        String queryCourse = "SELECT *" +
                 "FROM Student_enrollments " +
                 "JOIN Grades " +
                 "ON Student_enrollments.Grade_ID = Grades.Grade_ID " +
@@ -64,7 +64,7 @@ public class StudentModel {
     public String averageCourseGradeQuery() {
         double avg = 0;
         String returnString = "";
-        String queryCourse = "SELECT avg(grade)" +          //We find everything in the Students and courses tables. We then joins the student IDs and the course IDS with their respective tables from the Student_enrollment table.
+        String queryCourse = "SELECT avg(grade)" +
                 "FROM Student_enrollments " +
                 "JOIN Grades " +
                 "ON Student_enrollments.Grade_ID = Grades.Grade_ID " +
@@ -89,7 +89,7 @@ public class StudentModel {
 
     public String studentCoursesGradeQuery() {
         String returnString = "";
-        String queryStudentGrade = "SELECT Course_name, Grade " +          //We find everything in the Students and courses tables. We then joins the student IDs and the course IDS with their respective tables from the Student_enrollment table.
+        String queryStudentGrade = "SELECT Course_name, Grade " +
                 "FROM Student_enrollments " +
                 "JOIN Grades " +
                 "ON Student_enrollments.Grade_ID = Grades.Grade_ID " +
@@ -143,7 +143,7 @@ public class StudentModel {
     public String averageStudentGradeQuery() {
         double avg = 0;
         String returnString = "";
-        String queryStudentGrade = "SELECT avg(grade)" +          //We find everything in the Students and courses tables. We then joins the student IDs and the course IDS with their respective tables from the Student_enrollment table.
+        String queryStudentGrade = "SELECT avg(grade)" +
                 "FROM Student_enrollments " +
                 "JOIN Grades " +
                 "ON Student_enrollments.Grade_ID = Grades.Grade_ID " +
@@ -279,5 +279,4 @@ public class StudentModel {
             System.out.println(e.getMessage());
         }
     }
-
 }
