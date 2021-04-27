@@ -57,15 +57,10 @@ public class Main extends Application { //Application is the class holding all t
         ListView<String> studentListView = new ListView<>(); // specify what type the list is holding. This one holds strings
         studentListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE); // can also be set to select multiple
         studentListView.setMinWidth(windowWidth / 3);
-        try {
-            SDB.connect();
-            SDB.createStatement();
-            ArrayList<String> studentNames = SDB.queryGetStudentNames();
-            SDB.close();
-            studentListView.getItems().addAll(studentNames); //Adds the different studentNames
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        connectToDataBase(SDB);
+        ArrayList<String> studentNames = SDB.queryGetStudentNames();
+        studentListView.getItems().addAll(studentNames); //Adds the different studentNames
+        closeConnectionToDataBase(SDB);
 
         // --- STUDENTSCENE BOTTOM MENU ---
         HBox studentBottomMenu = new HBox(20); // top menu in studentspanel
@@ -73,57 +68,17 @@ public class Main extends Application { //Application is the class holding all t
         studentBottomMenu.setSpacing(10); //spacing between buttons
         studentBottomMenu.setStyle("-fx-background-color: #336699;"); //color
 
-        Button btnAddStudent = new Button("Add Student");
-        btnAddStudent.setOnAction(e -> {
-            ArrayList<String> studentInformation = AddStudentBox.display(); //returner en ArrayList<String> med information om en studerende
-            if (!studentInformation.isEmpty()) {
-                try { // VIRKER IKKE HELT. Retunerer 'query does not return ResultSet'
-                    SDB.connect();
-                    SDB.createStatement();
-                    SDB.addStudent(studentInformation.get(0), studentInformation.get(1), studentInformation.get(2), studentInformation.get(3));
-                    // UPDATE THE LIST HERE
-                    SDB.close();
-                } catch (SQLException ex) {
-                    System.out.println(ex.getMessage());
-                }
-            }
-        });
-
-        Button btnRemoveStudent = new Button("Remove student");
-        btnRemoveStudent.setOnAction(e -> {
-            if (studentListView.getSelectionModel().getSelectedItem() != null) {
-                String message = "Are you sure you want to remove " + studentListView.getSelectionModel().getSelectedItem() + "?";
-                boolean confirmation = ConfirmBox.display("Remove Student", message);
-                if (confirmation) {
-                    System.out.println("REMOVE STUDENT " + studentListView.getSelectionModel().getSelectedItem()); // MAKE
-                    try { // THIS IS WHERE THE STUDENT GETS REMOVED
-                        SDB.connect();
-                        SDB.createStatement();
-                        SDB.removeStudent();
-                        SDB.close();
-                    } catch (SQLException ex) {
-                        System.out.println(ex.getMessage());
-                    }
-                }
-            }
-        });
-
         // -- STUDENTSCENE GET STUDENTINFORMATION BUTTON
         Button btnGetStudentInformation = new Button("Get Info");
         btnGetStudentInformation.setOnAction(event -> {
             if (studentListView.getSelectionModel().getSelectedItem() != null) {
-                try {
-                    SDB.connect();
-                    SDB.createStatement();
-                    SDB.selectedStudent = studentListView.getSelectionModel().getSelectedItem();
-                    information.setText(SDB.studentCoursesGradeQuery() + "\n" + SDB.averageStudentGradeQuery());
-                    SDB.close();
-                } catch (SQLException e) {
-                    System.out.println(e.getMessage());
-                }
+                connectToDataBase(SDB);
+                SDB.selectedStudent = studentListView.getSelectionModel().getSelectedItem();
+                information.setText(SDB.studentCoursesGradeQuery() + "\n" + SDB.averageStudentGradeQuery());
+                closeConnectionToDataBase(SDB);
             }
         });
-        studentBottomMenu.getChildren().addAll(btnAddStudent, btnRemoveStudent, btnGetStudentInformation);
+        studentBottomMenu.getChildren().addAll(btnGetStudentInformation);
 
 
         // --- STUDENTSCENE LAYOUT BORDERPANE ---
@@ -156,15 +111,10 @@ public class Main extends Application { //Application is the class holding all t
         ListView<String> courseListView = new ListView<>(); // specify what type the list is holding. This one holds strings
         courseListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE); // can also be set to select multiple
         courseListView.setMinWidth(windowWidth / 3);
-        try {
-            SDB.connect();
-            SDB.createStatement();
-            ArrayList<String> courseNames = SDB.queryGetCourses();
-            SDB.close();
-            courseListView.getItems().addAll(courseNames); //Adds the different courses
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        connectToDataBase(SDB);
+        ArrayList<String> courseNames = SDB.queryGetCourses();
+        courseListView.getItems().addAll(courseNames); //Adds the different courses
+        closeConnectionToDataBase(SDB);
 
         // -- TEXT-AREA COURSE
         TextArea informationCourse = new TextArea();
@@ -190,15 +140,10 @@ public class Main extends Application { //Application is the class holding all t
         });
 
         courseListView.getSelectionModel().selectedItemProperty().addListener((v, oldValue, newValue) -> {
-            try {
-                SDB.connect();
-                SDB.createStatement();
-                SDB.selectedCourse = courseListView.getSelectionModel().getSelectedItem();
-                informationCourse.setText(SDB.courseInfoQuery() + "\n" + SDB.averageCourseGradeQuery());
-                SDB.close();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
+            connectToDataBase(SDB);
+            SDB.selectedCourse = courseListView.getSelectionModel().getSelectedItem();
+            informationCourse.setText(SDB.courseInfoQuery() + "\n" + SDB.averageCourseGradeQuery());
+            closeConnectionToDataBase(SDB);
         });
         courseBottomMenu.getChildren().addAll(btnAddCourse, btnEditCourseInformation);
 
@@ -240,6 +185,24 @@ public class Main extends Application { //Application is the class holding all t
         window.show();
 
     } // ### JavaFX Main code stops here ###
+
+
+    public void connectToDataBase(StudentModel SDB){
+        try{
+            SDB.connect();
+            SDB.createStatement();
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void closeConnectionToDataBase(StudentModel SDB){
+        try{
+            SDB.close();
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
 
     public void closeProgram() { //method for closing the program
         boolean confirmation = ConfirmBox.display("ATTENTION", "Are you sure you want to close?");
