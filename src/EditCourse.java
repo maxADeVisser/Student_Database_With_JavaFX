@@ -39,7 +39,8 @@ public class EditCourse {
         gradeCombobox.getItems().addAll(grades); //Adds the different studentNames
 
         gradeCombobox.setOnAction(event -> {
-            System.out.println("UPDATE GRADE HERE");
+            // UPDATE GRADE VALUE HERE !!!!!!!!!!!!!!!!!!!!!!
+            System.out.println(gradeCombobox.getValue());
         });
 
         //STUDENT CURRENT GRADE LABEL
@@ -67,11 +68,6 @@ public class EditCourse {
                 System.out.println(ex.getMessage());
             }
         });
-
-
-        Button btnUpdateInformation = new Button("Update Information");
-        btnUpdateInformation.setOnAction(e -> System.out.println("DO A UPDATE HERE"));
-
 
         VBox layout1 = new VBox(20);
         layout1.setPadding(new Insets(15, 12, 15, 12));
