@@ -17,13 +17,16 @@ public class StudentModel {
     StudentModel(String url) { //constructor
         this.url = url;
     }
+
     public void connect() throws SQLException {
         conn = getConnection(url);
     }
+
     public void close() throws SQLException {
         if (conn != null)
             conn.close();
     }
+
     public void createStatement() throws SQLException {
         this.stmt = conn.createStatement();
     }
@@ -83,7 +86,8 @@ public class StudentModel {
             return returnString;
         }
     }
-    public String studentCoursesQuery() {
+
+    public String studentCoursesGradeQuery() {
         String returnString = "";
         String queryStudentGrade = "SELECT Course_name, Grade " +          //We find everything in the Students and courses tables. We then joins the student IDs and the course IDS with their respective tables from the Student_enrollment table.
                 "FROM Student_enrollments " +
@@ -111,6 +115,31 @@ public class StudentModel {
         }
         return returnString;
     }
+
+    public ArrayList<String> getStudentsInCourse() {
+        ArrayList<String> returnList = new ArrayList<>();
+        String query = "SELECT Surname " +
+                "FROM Student_enrollments " +
+                "         join Students " +
+                "              on Student_enrollments.Student_ID = Students.Student_ID " +
+                "         join Courses " +
+                "              on Student_enrollments.Course_ID = Courses.Course_ID " +
+                "where Course_name = '"+selectedCourse+"';";
+        try {
+            rs = stmt.executeQuery(query);
+            if (rs == null)
+                System.out.println("No students found for that course");
+            while (rs != null && rs.next()) {
+                returnList.add(rs.getString("Surname"));
+            }
+            rs = null;
+            return returnList;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return returnList;
+    }
+
     public String averageStudentGradeQuery() {
         double avg = 0;
         String returnString = "";
@@ -138,33 +167,36 @@ public class StudentModel {
         }
     }
 
-    public String studentCourseGradeQuery(String course) {
+    public String studentCourseGradeQuery() {
         String grade = "";
-        String query = "SELECT Grades.Grade_ID FROM Student_enrollments" +
-                "Join Grades on Student_enrollments.Grade_ID = Grades.Grade_ID" +
-                "join Students on Student_enrollments.Student_ID = Students.Student_ID" +
-                "join Courses on Student_enrollments.Course_ID = Courses.Course_ID" +
-                "where Surname = '" + selectedStudent + "' AND Course_name = '" + course + "';";
+        String query = "SELECT Grades.Grade_ID " +
+                "FROM Student_enrollments " +
+                "   JOIN Grades " +
+                "       ON Student_enrollments.Grade_ID = Grades.Grade_ID " +
+                "   JOIN Students" +
+                "        ON Student_enrollments.Student_ID = Students.Student_ID " +
+                "   JOIN Courses" +
+                "        ON Student_enrollments.Course_ID = Courses.Course_ID " +
+                "WHERE Surname = '" + selectedStudent + "' " +
+                "AND Course_name = '" + selectedCourse + "';";
         try {
             rs = stmt.executeQuery(query);
-            System.out.println("QUERY EXECUTED");
             if (rs == null) {
-                System.out.println("No grade found for " + selectedStudent + " in course " + course);
+                System.out.println("No grade found for " + selectedStudent + " in course " + selectedCourse);
             } else {
                 grade += rs.getString("Grade_ID");
             }
             rs = null;
             return grade;
         } catch (SQLException e) {
-            System.out.println("FEJL");
             System.out.println(e.getMessage());
         }
         return grade;
     }
 
-    public void addStudent(String ID, String surname, String lastname, String cityID){
+    public void addStudent(String ID, String surname, String lastname, String cityID) {
         String command = "INSERT INTO Students (Student_ID, Surname, Lastname, City_ID)\n" +
-                "VALUES ('"+ID+"', '"+surname+"', '"+lastname+"', '"+cityID+"')";
+                "VALUES ('" + ID + "', '" + surname + "', '" + lastname + "', '" + cityID + "')";
         try {
             stmt.executeUpdate(command);
         } catch (SQLException e) {
@@ -172,7 +204,7 @@ public class StudentModel {
         }
     }
 
-    public void removeStudent(){ // SKAL LAVES FÆRDIG. VIRKER IKKE ENDNU
+    public void removeStudent() { // SKAL LAVES FÆRDIG. VIRKER IKKE ENDNU
         String command = "DELETE FROM Students WHERE Surname = 'Max';";
         String command1 = "DELETE FROM Student_enrollments WHERE Student_ID = 'STUDENT-MDV';";
         try {
@@ -183,7 +215,7 @@ public class StudentModel {
         }
     }
 
-    public ArrayList<String> queryGetStudentNames(){
+    public ArrayList<String> queryGetStudentNames() {
         ArrayList<String> studentNames = new ArrayList<>();
         String query = "SELECT Surname FROM Students;";
         try {
@@ -200,6 +232,7 @@ public class StudentModel {
             return studentNames;
         }
     }
+
     public ArrayList<String> queryGetCourses() {
         ArrayList<String> courseNames = new ArrayList<>();
         String query = "SELECT Course_name FROM Courses";
@@ -218,7 +251,7 @@ public class StudentModel {
         }
     }
 
-    public ArrayList<String> getAllGrades(){
+    public ArrayList<String> getAllGrades() {
         String query = "SELECT Grade_ID FROM Grades;";
         ArrayList<String> grades = new ArrayList<>();
         try {
@@ -233,6 +266,17 @@ public class StudentModel {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return grades;
+        }
+    }
+
+    public void updateGrade(String grade){
+        String command = "UPDATE Student_enrollments SET Grade_ID ='" + grade + "' " +
+                "WHERE course_ID = (SELECT Course_ID FROM Courses WHERE Courses.Course_name = '" + selectedCourse + "') " +
+                "AND Student_ID = (SELECT Student_ID FROM Students WHERE Students.Surname = '"+selectedStudent+"');";
+        try {
+            stmt.executeUpdate(command);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
     }
 
