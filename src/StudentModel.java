@@ -7,7 +7,6 @@ public class StudentModel {
     Connection conn = null;
     String url;
     Statement stmt = null;
-    //PreparedStatement pstmt = null;
     ResultSet rs = null;
     String selectedCourse = "";
 
@@ -92,16 +91,25 @@ public class StudentModel {
     }
 
     public void addStudent(String ID, String surname, String lastname, String cityID){
-        String task = "INSERT INTO Students (Student_ID, Surname, Lastname, City_ID)\n" +
+        String command = "INSERT INTO Students (Student_ID, Surname, Lastname, City_ID)\n" +
                 "VALUES ('"+ID+"', '"+surname+"', '"+lastname+"', '"+cityID+"')";
         try {
-            stmt.executeQuery(task);
+            stmt.executeUpdate(command);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public void removeStudent(){ } //MAKE
+    public void removeStudent(){ // SKAL LAVES FÆRDIG. VIRKER IKKE ENDNU
+        String command = "DELETE FROM Students WHERE Surname = 'Max';";
+        String command1 = "DELETE FROM Student_enrollments WHERE Student_ID = 'STUDENT-MDV';";
+        try {
+            stmt.executeUpdate(command);
+            stmt.executeUpdate(command1);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
     public String AverageCourseGradeQuery() {
         double avg = 0;
