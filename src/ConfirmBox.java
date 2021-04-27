@@ -14,7 +14,7 @@ public class ConfirmBox {
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL); //does so that the AlertBox must be dealt with when it pops up
         window.setTitle(title);
-        window.setMinWidth(250); // er ikke sikker på hvad gør
+        window.setMinWidth(250);
         Label label = new Label(message);
 
         Button yesButton = new Button("Yes");
