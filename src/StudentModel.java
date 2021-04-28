@@ -1,6 +1,3 @@
-import javafx.beans.Observable;
-import javafx.collections.ObservableList;
-
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -18,20 +15,22 @@ public class StudentModel {
         this.url = url;
     }
 
-    public void connect() throws SQLException {
+    public void connect() throws SQLException { //connects to the url given in the main class
         conn = getConnection(url);
     }
 
-    public void close() throws SQLException {
+    public void close() throws SQLException { //closes that connection
         if (conn != null)
             conn.close();
     }
 
     public void createStatement() throws SQLException {
-        this.stmt = conn.createStatement();
+        this.stmt = conn.createStatement(); // creates a Statement instance for sending SQL statements to the database we're connected to.
     }
 
-    // -- DIFFERENT QUERY METHODS:
+    // ------- QUERY METHODS ------- //
+
+    //Returns a string with every students surname, lastname and grade in the selected course separated by a nextLine
     public String courseInfoQuery() {
         String returnString = "";
         String queryCourse = "SELECT *" +
@@ -61,6 +60,7 @@ public class StudentModel {
         return returnString;
     }
 
+    //Returns the total average from the selected course
     public String averageCourseGradeQuery() {
         double avg = 0;
         String returnString = "";
@@ -78,7 +78,7 @@ public class StudentModel {
             while (rs != null && rs.next()) {
                 avg = rs.getDouble("avg(grade)");
             }
-            returnString = "Average grade: \n" + avg;
+            returnString = "Total average: " + avg;
             rs = null;
             return returnString;
         } catch (SQLException e) {
@@ -87,6 +87,7 @@ public class StudentModel {
         }
     }
 
+    //Returns a string with the course names and grades for the selected student
     public String studentCoursesGradeQuery() {
         String returnString = "";
         String queryStudentGrade = "SELECT Course_name, Grade " +
@@ -116,15 +117,16 @@ public class StudentModel {
         return returnString;
     }
 
+    //returns a list with all the students names from the selected course
     public ArrayList<String> getStudentsInCourse() {
         ArrayList<String> returnList = new ArrayList<>();
         String query = "SELECT Surname " +
                 "FROM Student_enrollments " +
-                "         join Students " +
-                "              on Student_enrollments.Student_ID = Students.Student_ID " +
-                "         join Courses " +
-                "              on Student_enrollments.Course_ID = Courses.Course_ID " +
-                "where Course_name = '"+selectedCourse+"';";
+                "         JOIN Students " +
+                "              ON Student_enrollments.Student_ID = Students.Student_ID " +
+                "         JOIN Courses " +
+                "              ON Student_enrollments.Course_ID = Courses.Course_ID " +
+                "WHERE Course_name = '"+selectedCourse+"';";
         try {
             rs = stmt.executeQuery(query);
             if (rs == null)
@@ -140,6 +142,7 @@ public class StudentModel {
         return returnList;
     }
 
+    //Return a string with the total average grade for a student
     public String averageStudentGradeQuery() {
         double avg = 0;
         String returnString = "";
@@ -167,8 +170,9 @@ public class StudentModel {
         }
     }
 
+    //return a grade for the selected student in the selected course
     public String studentCourseGradeQuery() {
-        String grade = "";
+        String returnString = "";
         String query = "SELECT Grades.Grade_ID " +
                 "FROM Student_enrollments " +
                 "   JOIN Grades " +
@@ -184,16 +188,17 @@ public class StudentModel {
             if (rs == null) {
                 System.out.println("No grade found for " + selectedStudent + " in course " + selectedCourse);
             } else {
-                grade += rs.getString("Grade_ID");
+                returnString += rs.getString("Grade_ID");
             }
             rs = null;
-            return grade;
+            return returnString;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return grade;
+        return returnString;
     }
 
+    //Returns the names of all the students in an array
     public ArrayList<String> queryGetStudentNames() {
         ArrayList<String> studentNames = new ArrayList<>();
         String query = "SELECT Surname FROM Students;";
@@ -202,7 +207,8 @@ public class StudentModel {
             if (rs == null)
                 System.out.println("No Students found");
             while (rs != null && rs.next()) {
-                studentNames.add(rs.getString(1));
+                studentNames.add(rs.getString("Surname"));
+
             }
             rs = null;
             return studentNames;
@@ -212,6 +218,7 @@ public class StudentModel {
         }
     }
 
+    //Returns the names of all the courses in an array
     public ArrayList<String> queryGetCourses() {
         ArrayList<String> courseNames = new ArrayList<>();
         String query = "SELECT Course_name FROM Courses";
@@ -230,6 +237,7 @@ public class StudentModel {
         }
     }
 
+    ////Returns all the grades available
     public ArrayList<String> getAllGrades() {
         String query = "SELECT Grade_ID FROM Grades;";
         ArrayList<String> grades = new ArrayList<>();
@@ -248,6 +256,7 @@ public class StudentModel {
         }
     }
 
+    //Update the grade from the selected student in the selected course.
     public void updateGrade(String grade){
         String command = "UPDATE Student_enrollments SET Grade_ID ='" + grade + "' " +
                 "WHERE course_ID = (SELECT Course_ID FROM Courses WHERE Courses.Course_name = '" + selectedCourse + "') " +
