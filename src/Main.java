@@ -24,7 +24,7 @@ public class Main extends Application { //Application is the class holding all t
     @Override
     public void start(Stage primaryStage) throws Exception { //all the code inside here is the main javaFX code
 
-        String url = "jdbc:sqlite:/Users/sebastian/IdeaProjects/forsøg1eksamen/Students.db";
+        String url = "jdbc:sqlite:";
         StudentModel SDB = new StudentModel(url);
 
         window = primaryStage; //renaming for easier understanding of code
